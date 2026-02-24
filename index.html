@@ -133,17 +133,17 @@
         <h1>Virtua Market</h1>
         
         <button id="notifyBtn">
-            🔔 Envoyer une notification
+            🔔 Envoyer un appel
         </button>
         
         <button id="clearBadgeBtn" class="secondary">
             🧹 Effacer toutes les notifications
         </button>
         
-        <div id="status">Prêt à envoyer des notifications</div>
+        <div id="status">Prêt à envoyer des appels</div>
         
         <div class="badge-info">
-            <span><strong>📊 Notifications non lues:</strong></span>
+            <span><strong>📊 Appels manqués:</strong></span>
             <span id="badgeDisplay" class="badge-count">0</span>
         </div>
         
@@ -163,7 +163,7 @@
             statusDiv.style.background = isError ? '#ffebee' : '#e8f5e8';
             
             setTimeout(() => {
-                statusDiv.textContent = 'Prêt à envoyer des notifications';
+                statusDiv.textContent = 'Prêt à envoyer des appels';
                 statusDiv.style.color = '#666';
                 statusDiv.style.background = '#f8f9fa';
             }, 4000);
@@ -202,6 +202,21 @@
             badgeDisplay.textContent = count;
         }
 
+        // Fonction pour créer une vibration longue et répétée
+        function startVibration() {
+            if ('vibrate' in navigator) {
+                // Pattern: vibrer 1 seconde, pause 0.5 seconde, répéter
+                navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 1000]);
+            }
+        }
+
+        // Arrêter la vibration
+        function stopVibration() {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(0);
+            }
+        }
+
         // Enregistrement du service worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
@@ -215,24 +230,24 @@
                 });
         }
 
-        // Fonction pour envoyer une notification
+        // Fonction pour envoyer une notification (appel)
         async function sendNotification() {
             try {
-                updateStatus('📱 Préparation de la notification...');
+                updateStatus('📞 Appel en cours...');
                 
                 if (!('Notification' in window)) {
-                    updateStatus('❌ Notifications non supportées', true);
+                    updateStatus('❌ Appels non supportés', true);
                     return;
                 }
 
                 // Gestion de la permission
                 if (Notification.permission === 'denied') {
-                    updateStatus('❌ Notifications bloquées - Débloquez dans les paramètres', true);
+                    updateStatus('❌ Appels bloqués - Débloquez dans les paramètres', true);
                     return;
                 }
 
                 if (Notification.permission === 'default') {
-                    updateStatus('📱 Demande de permission...');
+                    updateStatus('📞 Demande de permission pour les appels...');
                     const permission = await Notification.requestPermission();
                     if (permission !== 'granted') {
                         updateStatus('❌ Permission refusée', true);
@@ -240,7 +255,7 @@
                     }
                 }
 
-                // Incrémenter le compteur
+                // Incrémenter le compteur d'appels manqués
                 let count = parseInt(localStorage.getItem('notifCount') || '0');
                 count++;
                 localStorage.setItem('notifCount', count);
@@ -248,69 +263,75 @@
                 // Mettre à jour le badge
                 await updateBadgeDisplay();
 
-                // Envoyer la notification via Service Worker (obligatoire pour le badge Android)
+                // Démarrer la vibration (comme un appel)
+                startVibration();
+                updateStatus('📞 Appel entrant... vibration activée');
+
+                // Envoyer la notification via Service Worker
                 if (navigator.serviceWorker.controller) {
                     const registration = await navigator.serviceWorker.ready;
                     
-                    // Tag unique pour que la notification persiste
-                    const notificationTag = 'virtua-' + Date.now();
+                    // Tag unique pour la notification
+                    const notificationTag = 'appel-' + Date.now();
                     
-                    await registration.showNotification('Virtua Market', {
-                        body: count === 1 
-                            ? '🔥 Vous avez 1 nouvelle notification !'
-                            : `🔥 Vous avez ${count} nouvelles notifications !`,
+                    await registration.showNotification('📞 Appel entrant - Virtua Market', {
+                        body: 'Appel de Virtua Market... Appuyez pour répondre',
                         icon: 'icon-512.png',
                         badge: 'icon-192.png',
-                        vibrate: [200, 100, 200],
+                        vibrate: [1000, 500, 1000, 500, 1000, 500, 1000], // Vibration longue comme un appel
                         tag: notificationTag,
                         renotify: true,
-                        requireInteraction: true,
+                        requireInteraction: true, // Reste jusqu'à interaction
                         silent: false,
                         actions: [
                             {
-                                action: 'open',
-                                title: '📱 Ouvrir Virtua Market'
+                                action: 'answer',
+                                title: '📞 Répondre'
+                            },
+                            {
+                                action: 'ignore',
+                                title: '❌ Ignorer'
                             }
                         ],
                         data: {
                             timestamp: new Date().toISOString(),
                             count: count,
                             appName: 'Virtua Market',
-                            tag: notificationTag
+                            tag: notificationTag,
+                            type: 'call'
                         }
                     });
 
-                    // Message selon le nombre de notifications
+                    // Afficher le message selon le nombre d'appels manqués
                     if (count === 1) {
-                        updateStatus('✅ 1 notification envoyée ! Le badge apparaît sur l\'icône');
+                        updateStatus(`📞 1 appel en cours... Répondez dans la notification`);
                     } else {
-                        updateStatus(`✅ ${count} notifications envoyées ! Le badge affiche ${count} sur l'icône`);
+                        updateStatus(`📞 Appel en cours... ${count} appels manqués au total`);
                     }
                     
-                    // Vérifier que le badge système est bien mis à jour
-                    setTimeout(() => {
-                        if ('setAppBadge' in navigator) {
-                            console.log('Badge système vérifié:', count);
-                        }
-                    }, 500);
-                    
                 } else {
-                    // Fallback si Service Worker pas prêt
-                    new Notification('Virtua Market', {
-                        body: `🔥 Vous avez ${count} nouvelle notification !`,
-                        icon: 'icon-512.png'
+                    // Fallback
+                    new Notification('📞 Appel entrant - Virtua Market', {
+                        body: 'Appel de Virtua Market...',
+                        icon: 'icon-512.png',
+                        vibrate: [1000, 500, 1000, 500, 1000],
+                        requireInteraction: true
                     });
-                    updateStatus('✅ Notification envoyée (mode fallback)');
+                    updateStatus('📞 Appel en cours (mode fallback)');
                 }
                 
             } catch (error) {
                 console.error('Erreur complète:', error);
                 updateStatus('❌ Erreur: ' + error.message, true);
+                stopVibration();
             }
         }
 
-        // Effacer toutes les notifications
+        // Effacer toutes les notifications et arrêter la vibration
         async function clearAllNotifications() {
+            // Arrêter la vibration
+            stopVibration();
+            
             // Réinitialiser le compteur
             localStorage.setItem('notifCount', '0');
             
@@ -329,13 +350,24 @@
                 notifications.forEach(notification => notification.close());
             }
             
-            updateStatus('✅ Toutes les notifications ont été effacées');
+            updateStatus('✅ Appels terminés');
         }
 
         // Écouter les messages du Service Worker
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.type === 'CLEAR_BADGE') {
+                if (event.data.type === 'ANSWER_CALL') {
+                    // Répondre à l'appel
+                    stopVibration();
+                    updateStatus('📞 Appel en cours...');
+                    setTimeout(() => {
+                        updateStatus('✅ Appel terminé');
+                    }, 3000);
+                } else if (event.data.type === 'IGNORE_CALL') {
+                    // Ignorer l'appel
+                    stopVibration();
+                    updateStatus('❌ Appel ignoré');
+                } else if (event.data.type === 'CLEAR_BADGE') {
                     clearAllNotifications();
                 }
             });
@@ -361,7 +393,7 @@
             if ('setAppBadge' in navigator && count > 0) {
                 navigator.setAppBadge(count).catch(() => {});
             }
-        }, 5000); // Vérification toutes les 5 secondes
+        }, 5000);
 
     </script>
 </body>
