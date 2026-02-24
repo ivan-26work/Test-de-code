@@ -29,9 +29,17 @@
     <button id="notifyBtn">Notification</button>
 
     <script>
-        // Enregistrement du Service Worker
+        // Enregistrement du Service Worker généré par PWA Builder
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker enregistré avec succès:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Échec enregistrement Service Worker:', error);
+                    });
+            });
         }
 
         // Gestion des notifications
@@ -42,25 +50,34 @@
             }
 
             if (Notification.permission === 'granted') {
-                new Notification('Test', {
-                    body: 'Notification native reçue !',
-                    vibrate: [200, 100, 200],
+                new Notification('Test Notification PWA', {
+                    body: 'Notification native reçue depuis votre PWA !',
                     icon: 'icon-192.png',
-                    badge: 'icon-192.png'
+                    badge: 'icon-192.png',
+                    vibrate: [200, 100, 200],
+                    tag: 'notification-test',
+                    renotify: true
                 });
             } 
             else if (Notification.permission !== 'denied') {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    new Notification('Test', {
-                        body: 'Notification native reçue !',
-                        vibrate: [200, 100, 200],
+                    new Notification('Test Notification PWA', {
+                        body: 'Notification native reçue depuis votre PWA !',
                         icon: 'icon-192.png',
-                        badge: 'icon-192.png'
+                        badge: 'icon-192.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'notification-test',
+                        renotify: true
                     });
                 }
             }
         });
+
+        // Vérifier si l'application est installée en mode PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            console.log('Application lancée en mode PWA');
+        }
     </script>
 </body>
 </html>
