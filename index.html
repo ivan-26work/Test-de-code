@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Notification PWA</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             margin: 0;
@@ -28,6 +29,12 @@
     <button id="notifyBtn">Notification</button>
 
     <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+
+        // Gestion des notifications
         document.getElementById('notifyBtn').addEventListener('click', async () => {
             if (!('Notification' in window)) {
                 alert('Notifications non supportées');
@@ -37,7 +44,9 @@
             if (Notification.permission === 'granted') {
                 new Notification('Test', {
                     body: 'Notification native reçue !',
-                    vibrate: [200, 100, 200]
+                    vibrate: [200, 100, 200],
+                    icon: 'icon-192.png',
+                    badge: 'icon-192.png'
                 });
             } 
             else if (Notification.permission !== 'denied') {
@@ -45,7 +54,9 @@
                 if (permission === 'granted') {
                     new Notification('Test', {
                         body: 'Notification native reçue !',
-                        vibrate: [200, 100, 200]
+                        vibrate: [200, 100, 200],
+                        icon: 'icon-192.png',
+                        badge: 'icon-192.png'
                     });
                 }
             }
