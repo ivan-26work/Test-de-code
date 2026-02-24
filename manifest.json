@@ -1,0 +1,20 @@
+{
+    "name": "Test Notification PWA",
+    "short_name": "Test Notif",
+    "start_url": "https://ivan-26work.github.io/Test-de-code/",
+    "display": "standalone",
+    "background_color": "#f0f0f0",
+    "theme_color": "#2196f3",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
