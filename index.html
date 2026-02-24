@@ -37,12 +37,14 @@
             width: 100px;
             height: 100px;
             margin: 0 auto 20px;
-            background: #f0f0f0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
         
         button {
@@ -56,24 +58,34 @@
             font-weight: bold;
             margin: 10px 0;
             width: 100%;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
         button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
         button.secondary {
             background: #f0f0f0;
             color: #764ba2;
+            box-shadow: none;
+        }
+        
+        button.secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
         }
         
         #status {
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 10px;
             font-size: 14px;
             min-height: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s;
         }
         
         .badge-info {
@@ -82,16 +94,34 @@
             background: #f8f9fa;
             border-radius: 10px;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
         .badge-count {
             display: inline-block;
             background: #ff4444;
             color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-left: 10px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .device-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -107,52 +137,80 @@
         </button>
         
         <button id="clearBadgeBtn" class="secondary">
-            🧹 Effacer le badge
+            🧹 Effacer toutes les notifications
         </button>
         
-        <div id="status"></div>
+        <div id="status">Prêt à envoyer des notifications</div>
         
         <div class="badge-info">
-            <strong>Notifications non lues:</strong>
+            <span><strong>📊 Notifications non lues:</strong></span>
             <span id="badgeDisplay" class="badge-count">0</span>
+        </div>
+        
+        <div class="info-text">
+            <span id="badgeSupport"></span>
         </div>
     </div>
 
     <script>
         const statusDiv = document.getElementById('status');
         const badgeDisplay = document.getElementById('badgeDisplay');
+        const badgeSupport = document.getElementById('badgeSupport');
         
         function updateStatus(message, isError = false) {
             statusDiv.textContent = message;
             statusDiv.style.color = isError ? '#ff4444' : '#00C851';
+            statusDiv.style.background = isError ? '#ffebee' : '#e8f5e8';
+            
             setTimeout(() => {
-                statusDiv.textContent = '';
-            }, 3000);
+                statusDiv.textContent = 'Prêt à envoyer des notifications';
+                statusDiv.style.color = '#666';
+                statusDiv.style.background = '#f8f9fa';
+            }, 4000);
         }
 
-        function updateBadgeDisplay() {
+        // Vérifier le support du badge système
+        function checkBadgeSupport() {
+            if ('setAppBadge' in navigator) {
+                badgeSupport.innerHTML = '✅ Badge système supporté <span class="device-badge">Android</span>';
+            } else {
+                badgeSupport.innerHTML = '⚠️ Badge système non supporté sur ce navigateur';
+            }
+        }
+
+        // Mettre à jour le badge (affichage ET système)
+        async function updateBadgeDisplay() {
             const count = parseInt(localStorage.getItem('notifCount') || '0');
             badgeDisplay.textContent = count;
             
-            // Mettre à jour le badge système
+            // Mise à jour du badge sur l'icône Android
             if ('setAppBadge' in navigator) {
-                if (count > 0) {
-                    navigator.setAppBadge(count);
-                } else {
-                    navigator.clearAppBadge();
+                try {
+                    if (count > 0) {
+                        await navigator.setAppBadge(count);
+                        console.log('✅ Badge système mis à jour:', count);
+                    } else {
+                        await navigator.clearAppBadge();
+                        console.log('✅ Badge système effacé');
+                    }
+                } catch (error) {
+                    console.error('Erreur badge système:', error);
                 }
             }
+            
+            // Mise à jour du badge dans l'application
+            badgeDisplay.textContent = count;
         }
 
         // Enregistrement du service worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
                 .then(reg => {
-                    console.log('Service Worker OK');
-                    updateStatus('✅ Service Worker prêt');
+                    console.log('Service Worker Virtua Market enregistré');
+                    updateStatus('✅ Service Worker actif');
                 })
                 .catch(err => {
-                    console.error('Service Worker Error:', err);
+                    console.error('Erreur Service Worker:', err);
                     updateStatus('❌ Erreur Service Worker', true);
                 });
         }
@@ -169,11 +227,12 @@
 
                 // Gestion de la permission
                 if (Notification.permission === 'denied') {
-                    updateStatus('❌ Notifications bloquées', true);
+                    updateStatus('❌ Notifications bloquées - Débloquez dans les paramètres', true);
                     return;
                 }
 
                 if (Notification.permission === 'default') {
+                    updateStatus('📱 Demande de permission...');
                     const permission = await Notification.requestPermission();
                     if (permission !== 'granted') {
                         updateStatus('❌ Permission refusée', true);
@@ -185,11 +244,16 @@
                 let count = parseInt(localStorage.getItem('notifCount') || '0');
                 count++;
                 localStorage.setItem('notifCount', count);
-                updateBadgeDisplay();
+                
+                // Mettre à jour le badge
+                await updateBadgeDisplay();
 
-                // Envoyer la notification via Service Worker
+                // Envoyer la notification via Service Worker (obligatoire pour le badge Android)
                 if (navigator.serviceWorker.controller) {
                     const registration = await navigator.serviceWorker.ready;
+                    
+                    // Tag unique pour que la notification persiste
+                    const notificationTag = 'virtua-' + Date.now();
                     
                     await registration.showNotification('Virtua Market', {
                         body: count === 1 
@@ -198,58 +262,107 @@
                         icon: 'icon-512.png',
                         badge: 'icon-192.png',
                         vibrate: [200, 100, 200],
-                        tag: 'virtua-' + Date.now(),
+                        tag: notificationTag,
                         renotify: true,
                         requireInteraction: true,
                         silent: false,
                         actions: [
                             {
                                 action: 'open',
-                                title: '📱 Ouvrir'
-                            },
-                            {
-                                action: 'clear',
-                                title: '✅ Marquer comme lu'
+                                title: '📱 Ouvrir Virtua Market'
                             }
                         ],
                         data: {
                             timestamp: new Date().toISOString(),
                             count: count,
-                            appName: 'Virtua Market'
+                            appName: 'Virtua Market',
+                            tag: notificationTag
                         }
                     });
 
-                    updateStatus('✅ Notification envoyée ! (Total: ' + count + ')');
+                    // Message selon le nombre de notifications
+                    if (count === 1) {
+                        updateStatus('✅ 1 notification envoyée ! Le badge apparaît sur l\'icône');
+                    } else {
+                        updateStatus(`✅ ${count} notifications envoyées ! Le badge affiche ${count} sur l'icône`);
+                    }
+                    
+                    // Vérifier que le badge système est bien mis à jour
+                    setTimeout(() => {
+                        if ('setAppBadge' in navigator) {
+                            console.log('Badge système vérifié:', count);
+                        }
+                    }, 500);
+                    
+                } else {
+                    // Fallback si Service Worker pas prêt
+                    new Notification('Virtua Market', {
+                        body: `🔥 Vous avez ${count} nouvelle notification !`,
+                        icon: 'icon-512.png'
+                    });
+                    updateStatus('✅ Notification envoyée (mode fallback)');
                 }
+                
             } catch (error) {
-                console.error('Erreur:', error);
+                console.error('Erreur complète:', error);
                 updateStatus('❌ Erreur: ' + error.message, true);
             }
         }
 
-        // Effacer le badge
-        async function clearBadge() {
+        // Effacer toutes les notifications
+        async function clearAllNotifications() {
+            // Réinitialiser le compteur
             localStorage.setItem('notifCount', '0');
-            updateBadgeDisplay();
-            updateStatus('✅ Badge effacé');
             
             // Effacer le badge système
             if ('clearAppBadge' in navigator) {
-                navigator.clearAppBadge();
+                await navigator.clearAppBadge();
             }
+            
+            // Mettre à jour l'affichage
+            await updateBadgeDisplay();
+            
+            // Fermer toutes les notifications affichées
+            if (navigator.serviceWorker.controller) {
+                const registration = await navigator.serviceWorker.ready;
+                const notifications = await registration.getNotifications();
+                notifications.forEach(notification => notification.close());
+            }
+            
+            updateStatus('✅ Toutes les notifications ont été effacées');
+        }
+
+        // Écouter les messages du Service Worker
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.type === 'CLEAR_BADGE') {
+                    clearAllNotifications();
+                }
+            });
         }
 
         // Initialisation
         document.getElementById('notifyBtn').addEventListener('click', sendNotification);
-        document.getElementById('clearBadgeBtn').addEventListener('click', clearBadge);
+        document.getElementById('clearBadgeBtn').addEventListener('click', clearAllNotifications);
         
         // Mettre à jour l'affichage du badge au chargement
         updateBadgeDisplay();
+        checkBadgeSupport();
 
         // Vérifier le mode PWA
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            console.log('🏪 Virtua Market - Mode PWA actif');
+            console.log('🏪 Virtua Market - Mode PWA actif sur l\'écran d\'accueil');
+            updateStatus('🏪 Virtua Market installé');
         }
+
+        // Vérifier périodiquement le badge (pour Android)
+        setInterval(() => {
+            const count = parseInt(localStorage.getItem('notifCount') || '0');
+            if ('setAppBadge' in navigator && count > 0) {
+                navigator.setAppBadge(count).catch(() => {});
+            }
+        }, 5000); // Vérification toutes les 5 secondes
+
     </script>
 </body>
 </html>
