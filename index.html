@@ -10,9 +10,11 @@
             margin: 0;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             background: #f0f0f0;
+            font-family: Arial, sans-serif;
         }
         button {
             padding: 20px 40px;
@@ -22,62 +24,105 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            margin-bottom: 20px;
+        }
+        #status {
+            padding: 10px;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <button id="notifyBtn">Notification</button>
+    <div id="status">En attente...</div>
 
     <script>
-        // Enregistrement du Service Worker généré par PWA Builder
+        const statusDiv = document.getElementById('status');
+        
+        // Mise à jour du statut
+        function updateStatus(message, isError = false) {
+            statusDiv.textContent = message;
+            statusDiv.style.color = isError ? 'red' : '#666';
+        }
+
+        // Enregistrement du service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker enregistré avec succès:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Échec enregistrement Service Worker:', error);
-                    });
-            });
-        }
-
-        // Gestion des notifications
-        document.getElementById('notifyBtn').addEventListener('click', async () => {
-            if (!('Notification' in window)) {
-                alert('Notifications non supportées');
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                new Notification('Test Notification PWA', {
-                    body: 'Notification native reçue depuis votre PWA !',
-                    icon: 'icon-192.png',
-                    badge: 'icon-192.png',
-                    vibrate: [200, 100, 200],
-                    tag: 'notification-test',
-                    renotify: true
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => {
+                    console.log('Service Worker OK');
+                    updateStatus('Service Worker prêt');
+                })
+                .catch(err => {
+                    console.error('Service Worker Error:', err);
+                    updateStatus('Erreur Service Worker', true);
                 });
-            } 
-            else if (Notification.permission !== 'denied') {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    new Notification('Test Notification PWA', {
-                        body: 'Notification native reçue depuis votre PWA !',
-                        icon: 'icon-192.png',
-                        badge: 'icon-192.png',
-                        vibrate: [200, 100, 200],
-                        tag: 'notification-test',
-                        renotify: true
-                    });
-                }
-            }
-        });
-
-        // Vérifier si l'application est installée en mode PWA
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            console.log('Application lancée en mode PWA');
         }
+
+        // Fonction pour envoyer une notification via le service worker
+        async function sendNotification() {
+            try {
+                // Vérifier le support des notifications
+                if (!('Notification' in window)) {
+                    updateStatus('Notifications non supportées', true);
+                    return;
+                }
+
+                // Vérifier/permission
+                if (Notification.permission === 'denied') {
+                    updateStatus('Notifications bloquées', true);
+                    return;
+                }
+
+                // Demander la permission si nécessaire
+                if (Notification.permission === 'default') {
+                    updateStatus('Demande de permission...');
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') {
+                        updateStatus('Permission refusée', true);
+                        return;
+                    }
+                }
+
+                // Permission accordée, envoyer la notification
+                if (Notification.permission === 'granted') {
+                    updateStatus('Envoi notification...');
+                    
+                    // Essayer via Service Worker d'abord (plus fiable dans une PWA)
+                    if (navigator.serviceWorker.controller) {
+                        const registration = await navigator.serviceWorker.ready;
+                        await registration.showNotification('Test Notification', {
+                            body: 'Ceci est une notification native!',
+                            icon: 'icon-192.png',
+                            badge: 'icon-192.png',
+                            vibrate: [200, 100, 200],
+                            tag: 'test-' + Date.now(),
+                            requireInteraction: true,
+                            silent: false
+                        });
+                        updateStatus('Notification envoyée!');
+                    } 
+                    // Fallback sur Notification classique
+                    else {
+                        new Notification('Test Notification', {
+                            body: 'Ceci est une notification native!',
+                            icon: 'icon-192.png',
+                            vibrate: [200, 100, 200]
+                        });
+                        updateStatus('Notification envoyée!');
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                updateStatus('Erreur: ' + error.message, true);
+            }
+        }
+
+        // Gestionnaire de clic sur le bouton
+        document.getElementById('notifyBtn').addEventListener('click', sendNotification);
+
+        // Afficher le statut initial
+        updateStatus('Prêt - Cliquez sur le bouton');
     </script>
 </body>
 </html>
