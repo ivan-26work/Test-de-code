@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Notification PWA</title>
+    <title>Virtua Market - Notifications</title>
     <link rel="manifest" href="manifest.json">
     <style>
         body {
@@ -13,37 +13,135 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
         button {
             padding: 20px 40px;
-            font-size: 24px;
-            background: #2196f3;
+            font-size: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
-            margin-bottom: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            width: 100%;
+            transition: transform 0.2s;
         }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button.secondary {
+            background: #f0f0f0;
+            color: #764ba2;
+        }
+        
         #status {
+            margin-top: 20px;
             padding: 10px;
-            color: #666;
+            border-radius: 10px;
             font-size: 14px;
+            min-height: 20px;
+        }
+        
+        .badge-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .badge-count {
+            display: inline-block;
+            background: #ff4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <button id="notifyBtn">Notification</button>
-    <div id="status">En attente...</div>
+    <div class="container">
+        <div class="logo">
+            🏪
+        </div>
+        <h1>Virtua Market</h1>
+        
+        <button id="notifyBtn">
+            🔔 Envoyer une notification
+        </button>
+        
+        <button id="clearBadgeBtn" class="secondary">
+            🧹 Effacer le badge
+        </button>
+        
+        <div id="status"></div>
+        
+        <div class="badge-info">
+            <strong>Notifications non lues:</strong>
+            <span id="badgeDisplay" class="badge-count">0</span>
+        </div>
+    </div>
 
     <script>
         const statusDiv = document.getElementById('status');
+        const badgeDisplay = document.getElementById('badgeDisplay');
         
-        // Mise à jour du statut
         function updateStatus(message, isError = false) {
             statusDiv.textContent = message;
-            statusDiv.style.color = isError ? 'red' : '#666';
+            statusDiv.style.color = isError ? '#ff4444' : '#00C851';
+            setTimeout(() => {
+                statusDiv.textContent = '';
+            }, 3000);
+        }
+
+        function updateBadgeDisplay() {
+            const count = parseInt(localStorage.getItem('notifCount') || '0');
+            badgeDisplay.textContent = count;
+            
+            // Mettre à jour le badge système
+            if ('setAppBadge' in navigator) {
+                if (count > 0) {
+                    navigator.setAppBadge(count);
+                } else {
+                    navigator.clearAppBadge();
+                }
+            }
         }
 
         // Enregistrement du service worker
@@ -51,78 +149,107 @@
             navigator.serviceWorker.register('service-worker.js')
                 .then(reg => {
                     console.log('Service Worker OK');
-                    updateStatus('Service Worker prêt');
+                    updateStatus('✅ Service Worker prêt');
                 })
                 .catch(err => {
                     console.error('Service Worker Error:', err);
-                    updateStatus('Erreur Service Worker', true);
+                    updateStatus('❌ Erreur Service Worker', true);
                 });
         }
 
-        // Fonction pour envoyer une notification via le service worker
+        // Fonction pour envoyer une notification
         async function sendNotification() {
             try {
-                // Vérifier le support des notifications
+                updateStatus('📱 Préparation de la notification...');
+                
                 if (!('Notification' in window)) {
-                    updateStatus('Notifications non supportées', true);
+                    updateStatus('❌ Notifications non supportées', true);
                     return;
                 }
 
-                // Vérifier/permission
+                // Gestion de la permission
                 if (Notification.permission === 'denied') {
-                    updateStatus('Notifications bloquées', true);
+                    updateStatus('❌ Notifications bloquées', true);
                     return;
                 }
 
-                // Demander la permission si nécessaire
                 if (Notification.permission === 'default') {
-                    updateStatus('Demande de permission...');
                     const permission = await Notification.requestPermission();
                     if (permission !== 'granted') {
-                        updateStatus('Permission refusée', true);
+                        updateStatus('❌ Permission refusée', true);
                         return;
                     }
                 }
 
-                // Permission accordée, envoyer la notification
-                if (Notification.permission === 'granted') {
-                    updateStatus('Envoi notification...');
+                // Incrémenter le compteur
+                let count = parseInt(localStorage.getItem('notifCount') || '0');
+                count++;
+                localStorage.setItem('notifCount', count);
+                updateBadgeDisplay();
+
+                // Envoyer la notification via Service Worker
+                if (navigator.serviceWorker.controller) {
+                    const registration = await navigator.serviceWorker.ready;
                     
-                    // Essayer via Service Worker d'abord (plus fiable dans une PWA)
-                    if (navigator.serviceWorker.controller) {
-                        const registration = await navigator.serviceWorker.ready;
-                        await registration.showNotification('Test Notification', {
-                            body: 'Ceci est une notification native!',
-                            icon: 'icon-192.png',
-                            badge: 'icon-192.png',
-                            vibrate: [200, 100, 200],
-                            tag: 'test-' + Date.now(),
-                            requireInteraction: true,
-                            silent: false
-                        });
-                        updateStatus('Notification envoyée!');
-                    } 
-                    // Fallback sur Notification classique
-                    else {
-                        new Notification('Test Notification', {
-                            body: 'Ceci est une notification native!',
-                            icon: 'icon-192.png',
-                            vibrate: [200, 100, 200]
-                        });
-                        updateStatus('Notification envoyée!');
-                    }
+                    await registration.showNotification('Virtua Market', {
+                        body: count === 1 
+                            ? '🔥 Vous avez 1 nouvelle notification !'
+                            : `🔥 Vous avez ${count} nouvelles notifications !`,
+                        icon: 'icon-512.png',
+                        badge: 'icon-192.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'virtua-' + Date.now(),
+                        renotify: true,
+                        requireInteraction: true,
+                        silent: false,
+                        actions: [
+                            {
+                                action: 'open',
+                                title: '📱 Ouvrir'
+                            },
+                            {
+                                action: 'clear',
+                                title: '✅ Marquer comme lu'
+                            }
+                        ],
+                        data: {
+                            timestamp: new Date().toISOString(),
+                            count: count,
+                            appName: 'Virtua Market'
+                        }
+                    });
+
+                    updateStatus('✅ Notification envoyée ! (Total: ' + count + ')');
                 }
             } catch (error) {
                 console.error('Erreur:', error);
-                updateStatus('Erreur: ' + error.message, true);
+                updateStatus('❌ Erreur: ' + error.message, true);
             }
         }
 
-        // Gestionnaire de clic sur le bouton
-        document.getElementById('notifyBtn').addEventListener('click', sendNotification);
+        // Effacer le badge
+        async function clearBadge() {
+            localStorage.setItem('notifCount', '0');
+            updateBadgeDisplay();
+            updateStatus('✅ Badge effacé');
+            
+            // Effacer le badge système
+            if ('clearAppBadge' in navigator) {
+                navigator.clearAppBadge();
+            }
+        }
 
-        // Afficher le statut initial
-        updateStatus('Prêt - Cliquez sur le bouton');
+        // Initialisation
+        document.getElementById('notifyBtn').addEventListener('click', sendNotification);
+        document.getElementById('clearBadgeBtn').addEventListener('click', clearBadge);
+        
+        // Mettre à jour l'affichage du badge au chargement
+        updateBadgeDisplay();
+
+        // Vérifier le mode PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            console.log('🏪 Virtua Market - Mode PWA actif');
+        }
     </script>
 </body>
 </html>
