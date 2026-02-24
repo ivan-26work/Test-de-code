@@ -13,7 +13,7 @@ self.addEventListener('activate', event => {
     console.log('Service Worker Virtua Market activé');
 });
 
-// Gestion des notifications
+// Gestion des clics sur les notifications (appels)
 self.addEventListener('notificationclick', event => {
     const notification = event.notification;
     const action = event.action;
@@ -21,20 +21,30 @@ self.addEventListener('notificationclick', event => {
     
     notification.close();
 
-    // Gérer les différentes actions
-    if (action === 'open') {
-        // Ouvrir l'application
-        event.waitUntil(
-            clients.openWindow('https://ivan-26work.github.io/Test-de-code/')
-        );
-    }
-    else if (action === 'clear') {
-        // Marquer comme lu - envoyer un message à l'application
+    // Gérer les actions de l'appel
+    if (action === 'answer') {
+        // Répondre à l'appel
         event.waitUntil(
             clients.matchAll().then(clients => {
                 clients.forEach(client => {
                     client.postMessage({
-                        type: 'CLEAR_BADGE',
+                        type: 'ANSWER_CALL',
+                        data: data
+                    });
+                });
+            }).then(() => {
+                // Ouvrir l'application
+                return clients.openWindow('https://ivan-26work.github.io/Test-de-code/');
+            })
+        );
+    }
+    else if (action === 'ignore') {
+        // Ignorer l'appel
+        event.waitUntil(
+            clients.matchAll().then(clients => {
+                clients.forEach(client => {
+                    client.postMessage({
+                        type: 'IGNORE_CALL',
                         data: data
                     });
                 });
@@ -42,17 +52,25 @@ self.addEventListener('notificationclick', event => {
         );
     }
     else {
-        // Clic sur la notification elle-même
+        // Clic sur la notification elle-même (répondre par défaut)
         event.waitUntil(
-            clients.openWindow('https://ivan-26work.github.io/Test-de-code/')
+            clients.matchAll().then(clients => {
+                clients.forEach(client => {
+                    client.postMessage({
+                        type: 'ANSWER_CALL',
+                        data: data
+                    });
+                });
+            }).then(() => {
+                return clients.openWindow('https://ivan-26work.github.io/Test-de-code/');
+            })
         );
     }
 });
 
-// Gestion des messages de l'application
+// Gestion des messages
 self.addEventListener('message', event => {
     if (event.data.type === 'CLEAR_NOTIFICATIONS') {
-        // Fermer toutes les notifications avec un certain tag
         self.registration.getNotifications().then(notifications => {
             notifications.forEach(notification => {
                 if (notification.tag === event.data.tag) {
@@ -63,30 +81,32 @@ self.addEventListener('message', event => {
     }
 });
 
-// Gestion des notifications push (pour plus tard)
+// Gestion des push (pour plus tard)
 self.addEventListener('push', event => {
     const options = {
-        body: event.data ? event.data.text() : 'Nouvelle notification Virtua Market',
+        body: '📞 Appel entrant de Virtua Market',
         icon: 'icon-512.png',
         badge: 'icon-192.png',
-        vibrate: [200, 100, 200],
+        vibrate: [1000, 500, 1000, 500, 1000, 500, 1000],
+        requireInteraction: true,
         actions: [
             {
-                action: 'open',
-                title: '📱 Ouvrir'
+                action: 'answer',
+                title: '📞 Répondre'
             },
             {
-                action: 'clear',
-                title: '✅ Marquer comme lu'
+                action: 'ignore',
+                title: '❌ Ignorer'
             }
         ],
         data: {
             timestamp: Date.now(),
-            appName: 'Virtua Market'
+            appName: 'Virtua Market',
+            type: 'call'
         }
     };
 
     event.waitUntil(
-        self.registration.showNotification('Virtua Market', options)
+        self.registration.showNotification('📞 Appel entrant - Virtua Market', options)
     );
 });
