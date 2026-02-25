@@ -3,72 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Notifications - Virtual Market</title>
-    <link rel="manifest" href="manifest-test.json">
+    <title>Virtual Market - Notifications</title>
+    <link rel="manifest" href="manifest.json">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            margin: 0;
+            height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         .container {
             background: white;
-            border-radius: 30px;
             padding: 40px;
-            max-width: 500px;
-            width: 100%;
+            border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: slideUp 0.5s ease;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
         }
         
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        h1 {
+            color: #27ae60;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
         }
         
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2.5rem;
+            font-size: 40px;
             color: white;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.95rem;
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
         }
         
         .info-card {
@@ -76,7 +58,8 @@
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #27ae60;
+            text-align: left;
         }
         
         .info-card h3 {
@@ -109,9 +92,9 @@
         }
         
         .badge-count {
-            background: #ff4444;
+            background: #e74c3c;
             color: white;
-            padding: 5px 15px;
+            padding: 5px 20px;
             border-radius: 30px;
             font-weight: bold;
             font-size: 1.2rem;
@@ -135,14 +118,14 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
         
         .btn-secondary {
@@ -156,12 +139,12 @@
         }
         
         .btn-danger {
-            background: #ff4444;
+            background: #e74c3c;
             color: white;
         }
         
         .btn-danger:hover {
-            background: #ff6666;
+            background: #c0392b;
             transform: translateY(-2px);
         }
         
@@ -170,7 +153,7 @@
             padding: 15px;
             border-radius: 16px;
             font-size: 0.9rem;
-            color: #333;
+            text-align: left;
             margin-bottom: 20px;
             border: 1px solid #e0e0e0;
         }
@@ -183,11 +166,6 @@
             gap: 5px;
         }
         
-        .status-box .content {
-            color: #666;
-            word-break: break-word;
-        }
-        
         .log-container {
             max-height: 200px;
             overflow-y: auto;
@@ -197,7 +175,7 @@
             border-radius: 16px;
             font-family: monospace;
             font-size: 0.8rem;
-            margin-top: 20px;
+            text-align: left;
         }
         
         .log-entry {
@@ -208,7 +186,7 @@
         
         .badge-system {
             display: inline-block;
-            background: #4CAF50;
+            background: #27ae60;
             color: white;
             padding: 2px 8px;
             border-radius: 4px;
@@ -222,22 +200,17 @@
 <body>
     <div class="container">
         <div class="logo">
-            📦
+            🏪
         </div>
         
         <h1>Virtual Market</h1>
-        <div class="subtitle">Système de notifications - Test autonome</div>
+        <div class="subtitle">Système de notifications - Test</div>
         
         <div class="info-card">
-            <h3>
-                <i class="fas fa-database"></i>
-                Connexion Supabase
-            </h3>
-            <p>
-                <strong>URL:</strong> https://vpgzcakjnbsttmmzpvar.supabase.co<br>
-                <strong>Table surveillée:</strong> commandes<br>
-                <strong>Événement:</strong> INSERT
-            </p>
+            <h3>📡 Connexion Supabase</h3>
+            <p><strong>Table surveillée:</strong> commandes</p>
+            <p><strong>Événement:</strong> INSERT (nouvelle commande)</p>
+            <p><strong>Badge:</strong> Commandes en attente</p>
         </div>
         
         <div class="badge-container">
@@ -254,31 +227,25 @@
             </button>
         </div>
         
-        <div class="button-group">
-            <button class="btn-danger" id="clearBadgeBtn">
-                🧹 Effacer badge
-            </button>
-        </div>
+        <button class="btn-danger" id="clearBadgeBtn" style="width:100%; margin-bottom:20px;">
+            🧹 Effacer badge
+        </button>
         
         <div class="status-box">
             <div class="title">
-                <i class="fas fa-info-circle"></i>
-                État
+                <span>📌 État</span>
                 <span id="badgeSupport" class="badge-system">Vérification...</span>
             </div>
-            <div class="content" id="status">
-                Initialisation...
-            </div>
+            <div id="status">Initialisation...</div>
         </div>
         
         <div class="log-container" id="logContainer">
-            <div class="log-entry">📋 Système de notifications démarré</div>
+            <div class="log-entry">🚀 Système démarré</div>
         </div>
     </div>
 
-    <!-- Service Worker -->
     <script>
-        // Configuration Supabase (depuis supabase.js)
+        // Configuration Supabase
         const SUPABASE_URL = 'https://vpgzcakjnbsttmmzpvar.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3pjYWtqbmJzdHRtbXpwdmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM3NTUsImV4cCI6MjA4NzI1OTc1NX0.9s9VN5B9IxFuxxCrSCRb3f4kaUGRMUGR6fHpglQXioQ';
         
@@ -315,7 +282,7 @@
         // Mise à jour du statut
         function updateStatus(message, isError = false) {
             statusDiv.textContent = message;
-            statusDiv.style.color = isError ? '#ff4444' : '#00C851';
+            statusDiv.style.color = isError ? '#e74c3c' : '#27ae60';
             addLog(message, isError ? 'error' : 'info');
         }
         
@@ -323,11 +290,11 @@
         function checkBadgeSupport() {
             if ('setAppBadge' in navigator) {
                 badgeSupport.innerHTML = '✅ Badge supporté';
-                badgeSupport.style.background = '#4CAF50';
+                badgeSupport.style.background = '#27ae60';
                 addLog('✅ Badge système supporté', 'success');
             } else {
                 badgeSupport.innerHTML = '❌ Badge non supporté';
-                badgeSupport.style.background = '#ff4444';
+                badgeSupport.style.background = '#e74c3c';
                 addLog('⚠️ Badge système non supporté', 'warning');
             }
         }
@@ -337,15 +304,14 @@
             badgeCount = count;
             badgeDisplay.textContent = badgeCount;
             
-            // Badge système
             if ('setAppBadge' in navigator) {
                 try {
                     if (badgeCount > 0) {
                         await navigator.setAppBadge(badgeCount);
-                        addLog(`🔄 Badge système mis à jour: ${badgeCount}`, 'info');
+                        addLog(`🔄 Badge système: ${badgeCount}`, 'info');
                     } else {
                         await navigator.clearAppBadge();
-                        addLog(`🔄 Badge système effacé`, 'info');
+                        addLog('🔄 Badge système effacé', 'info');
                     }
                 } catch (error) {
                     console.error('Erreur badge:', error);
@@ -366,16 +332,14 @@
             }
             
             try {
-                // Vibrer
                 if ('vibrate' in navigator) {
                     navigator.vibrate([500, 200, 500]);
                 }
                 
-                // Créer la notification
                 const notification = new Notification('🛒 Nouvelle commande !', {
                     body: `${commande.user_nom} • ${commande.total} F • ${commande.user_commune || 'Non définie'}`,
-                    icon: 'https://via.placeholder.com/192',
-                    badge: 'https://via.placeholder.com/192',
+                    icon: 'icon-192.png',
+                    badge: 'icon-192.png',
                     vibrate: [500, 200, 500],
                     requireInteraction: true,
                     tag: `commande-${commande.id}`,
@@ -391,7 +355,7 @@
                 };
                 
                 addLog(`📢 Notification envoyée pour commande ${commande.id}`, 'notification');
-                updateStatus(`✅ Notification envoyée (commande ${commande.id})`);
+                updateStatus(`✅ Notification envoyée`);
                 
             } catch (error) {
                 console.error('Erreur notification:', error);
@@ -418,12 +382,12 @@
             }
         }
         
-        // Démarrer l'écoute des nouvelles commandes
+        // Démarrer l'écoute
         function startListening() {
-            addLog('🔄 Démarrage de l\'écoute des commandes...', 'info');
+            addLog('🔄 Démarrage écoute des commandes...', 'info');
             
             subscription = supabase
-                .channel('commandes-test')
+                .channel('commandes-notifications')
                 .on(
                     'postgres_changes',
                     {
@@ -433,22 +397,17 @@
                     },
                     async (payload) => {
                         const commande = payload.new;
-                        addLog(`🆕 NOUVELLE COMMANDE DÉTECTÉE!`, 'success');
-                        addLog(`   ID: ${commande.id}`, 'info');
-                        addLog(`   Client: ${commande.user_nom}`, 'info');
-                        addLog(`   Total: ${commande.total} F`, 'info');
+                        addLog(`🆕 NOUVELLE COMMANDE!`, 'success');
+                        addLog(`   Client: ${commande.user_nom} - ${commande.total} F`, 'info');
                         
-                        // Mettre à jour le compteur
                         await countEnAttente();
-                        
-                        // Envoyer notification
                         await sendNotification(commande);
                     }
                 )
                 .subscribe((status) => {
-                    addLog(`📡 Statut connexion: ${status}`, 'info');
+                    addLog(`📡 Connexion: ${status}`, 'info');
                     if (status === 'SUBSCRIBED') {
-                        updateStatus('✅ Connecté - En attente de commandes...');
+                        updateStatus('✅ Connecté - En attente de commandes');
                     }
                 });
         }
@@ -456,38 +415,34 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', async () => {
             addLog('🚀 Système de notifications démarré', 'success');
-            
-            // Vérifier le support
             checkBadgeSupport();
-            
-            // Compter les commandes existantes
             await countEnAttente();
             
-            // Vérifier les permissions
+            // Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('service-worker.js');
+                    addLog('✅ Service Worker enregistré', 'success');
+                } catch (error) {
+                    addLog(`⚠️ Service Worker: ${error.message}`, 'warning');
+                }
+            }
+            
+            // Permission notifications
             if (!('Notification' in window)) {
                 updateStatus('❌ Notifications non supportées', true);
                 return;
             }
             
             if (Notification.permission === 'granted') {
-                updateStatus('✅ Permission déjà accordée');
+                updateStatus('✅ Permission accordée');
                 startListening();
             } else if (Notification.permission !== 'denied') {
-                updateStatus('📢 En attente de permission...');
-            }
-            
-            // Enregistrer le Service Worker (optionnel pour les tests)
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register('sw-test.js');
-                    addLog('✅ Service Worker enregistré', 'success');
-                } catch (error) {
-                    addLog(`⚠️ Service Worker: ${error.message}`, 'warning');
-                }
+                updateStatus('📢 Cliquez sur "Permission"');
             }
         });
         
-        // Bouton de test
+        // Bouton test
         document.getElementById('testNotifBtn').addEventListener('click', async () => {
             if (Notification.permission !== 'granted') {
                 const permission = await Notification.requestPermission();
@@ -497,7 +452,6 @@
                 }
             }
             
-            // Simuler une nouvelle commande
             const fakeCommande = {
                 id: 'test-' + Date.now(),
                 user_nom: 'Test Client',
@@ -505,7 +459,7 @@
                 user_commune: 'Cocody'
             };
             
-            addLog('🧪 Test: Envoi d\'une notification de test', 'warning');
+            addLog('🧪 Test: Notification de test', 'warning');
             await sendNotification(fakeCommande);
         });
         
@@ -523,12 +477,10 @@
         // Bouton effacer badge
         document.getElementById('clearBadgeBtn').addEventListener('click', async () => {
             await updateBadge(0);
-            
             if ('clearAppBadge' in navigator) {
                 await navigator.clearAppBadge();
             }
-            
-            addLog('🧹 Badge effacé manuellement', 'warning');
+            addLog('🧹 Badge effacé', 'warning');
         });
     </script>
 </body>
