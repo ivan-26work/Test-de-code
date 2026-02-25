@@ -14,7 +14,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -34,7 +34,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -94,13 +94,13 @@
         
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #27ae60;
         }
         
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
             border: none;
             border-radius: 30px;
@@ -145,7 +145,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #27ae60;
         }
         
         .stats-value {
@@ -198,7 +198,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
         }
         
@@ -207,8 +207,20 @@
             color: white;
         }
         
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
         .log-container {
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
             background: #1a1a1a;
             color: #00ff00;
@@ -230,15 +242,25 @@
             margin-top: 10px;
             text-align: center;
         }
+        
+        .permission-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
     </style>
-    <!-- CDN Supabase UNIQUE -->
+    <!-- CDN Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <div class="logo">🏪</div>
         <h1>Virtual Market</h1>
-        <div class="subtitle">Notifications Admin</div>
+        <div class="subtitle">Surveillance des commandes</div>
         
         <!-- Login -->
         <div class="login-section" id="loginSection">
@@ -249,7 +271,7 @@
             </div>
             <div class="form-group">
                 <label>Mot de passe</label>
-                <input type="password" id="passwordInput">
+                <input type="password" id="passwordInput" placeholder="••••••••">
             </div>
             <button class="btn-login" id="loginBtn">Se connecter</button>
             <div id="loginError" class="error-message"></div>
@@ -267,21 +289,27 @@
                 <span class="stats-value" id="badgeDisplay">0</span>
             </div>
             
-            <div id="status"></div>
-            <div class="log-container" id="logContainer">
-                <div class="log-entry">🚀 Prêt</div>
+            <div class="status-item">
+                <div class="status-icon" id="notifStatusIcon">🔔</div>
+                <span>Notifications</span>
+                <span class="permission-badge" id="notifStatus">En attente</span>
             </div>
             
             <div class="button-group">
                 <button class="btn-primary" id="testNotifBtn">🔔 Tester</button>
+                <button class="btn-secondary" id="requestPermissionBtn">🔐 Permission</button>
                 <button class="btn-danger" id="clearBadgeBtn">🧹 Effacer</button>
+            </div>
+            
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">🚀 Prêt - Connectez-vous</div>
             </div>
         </div>
     </div>
 
     <script>
         (function() {
-            // CONFIGURATION UNIQUE
+            // CONFIGURATION
             const SUPABASE_URL = 'https://vpgzcakjnbsttmmzpvar.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3pjYWtqbmJzdHRtbXpwdmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM3NTUsImV4cCI6MjA4NzI1OTc1NX0.9s9VN5B9IxFuxxCrSCRb3f4kaUGRMUGR6fHpglQXioQ';
             
@@ -298,19 +326,23 @@
             const adminEmail = document.getElementById('adminEmail');
             const badgeDisplay = document.getElementById('badgeDisplay');
             const logContainer = document.getElementById('logContainer');
-            const statusDiv = document.getElementById('status');
+            const notifStatus = document.getElementById('notifStatus');
+            const notifStatusIcon = document.getElementById('notifStatusIcon');
             
             let badgeCount = 0;
             let subscription = null;
             
-            function addLog(msg, type = 'info') {
+            // Fonction de log
+            function addLog(message, type = 'info') {
+                const icons = { info: '📋', success: '✅', error: '❌', warning: '⚠️', notification: '🔔' };
                 const entry = document.createElement('div');
                 entry.className = 'log-entry';
-                entry.innerHTML = `${type === 'success' ? '✅' : type === 'error' ? '❌' : '📋'} ${new Date().toLocaleTimeString()} - ${msg}`;
+                entry.innerHTML = `${icons[type] || '📋'} ${new Date().toLocaleTimeString()} - ${message}`;
                 logContainer.appendChild(entry);
                 logContainer.scrollTop = logContainer.scrollHeight;
             }
             
+            // Mise à jour du badge
             async function updateBadge(count) {
                 badgeCount = count;
                 badgeDisplay.textContent = badgeCount;
@@ -322,12 +354,57 @@
                 }
             }
             
+            // Envoyer une notification
+            async function sendNotification(title, body, commande = null) {
+                if (!('Notification' in window)) {
+                    addLog('❌ Notifications non supportées', 'error');
+                    return false;
+                }
+                
+                if (Notification.permission !== 'granted') {
+                    addLog('⚠️ Permission non accordée', 'warning');
+                    return false;
+                }
+                
+                try {
+                    // Vibration
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate([500, 200, 500]);
+                    }
+                    
+                    // Créer la notification
+                    const notification = new Notification(title, {
+                        body: body,
+                        icon: 'icon-192.png',
+                        badge: 'icon-192.png',
+                        vibrate: [500, 200, 500],
+                        requireInteraction: true,
+                        tag: commande ? `commande-${commande.id}` : 'test-' + Date.now(),
+                        data: commande || {}
+                    });
+                    
+                    notification.onclick = function() {
+                        window.focus();
+                        addLog('👆 Notification cliquée', 'info');
+                    };
+                    
+                    addLog(`📢 Notification: ${title}`, 'notification');
+                    return true;
+                    
+                } catch (error) {
+                    addLog(`❌ Erreur notification: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+            
+            // Compter les commandes en attente
             async function countEnAttente() {
                 try {
                     const { count, error } = await supabase
                         .from('commandes')
                         .select('*', { count: 'exact', head: true })
                         .eq('statut_admin', 'en_attente');
+                    
                     if (error) throw error;
                     await updateBadge(count || 0);
                     return count;
@@ -337,31 +414,60 @@
                 }
             }
             
+            // Démarrer la surveillance
             function startListening() {
                 if (subscription) subscription.unsubscribe();
+                
+                addLog('🔄 Démarrage surveillance des commandes...', 'info');
+                
                 subscription = supabase
-                    .channel('commandes-admin')
+                    .channel('commandes-surveillance')
                     .on('postgres_changes', { 
                         event: 'INSERT', 
                         schema: 'public', 
                         table: 'commandes' 
                     }, async (payload) => {
                         const cmd = payload.new;
-                        addLog(`🆕 Nouvelle commande: ${cmd.user_nom} - ${cmd.total} F`, 'success');
+                        addLog(`🆕 NOUVELLE COMMANDE DÉTECTÉE!`, 'success');
+                        addLog(`   Client: ${cmd.user_nom} - ${cmd.total} F`, 'info');
+                        
+                        // Mettre à jour le compteur
                         await countEnAttente();
                         
-                        if (Notification.permission === 'granted') {
-                            new Notification('🛒 Nouvelle commande', {
-                                body: `${cmd.user_nom} • ${cmd.total} F`,
-                                icon: 'icon-192.png',
-                                vibrate: [500, 200, 500]
-                            });
-                            if ('vibrate' in navigator) navigator.vibrate([500, 200, 500]);
-                        }
+                        // Envoyer notification
+                        await sendNotification(
+                            '🛒 Nouvelle commande !',
+                            `${cmd.user_nom} • ${cmd.total} F • ${cmd.user_commune || ''}`,
+                            cmd
+                        );
                     })
-                    .subscribe();
+                    .subscribe((status) => {
+                        addLog(`📡 Statut: ${status}`, 'info');
+                    });
             }
             
+            // Mettre à jour le statut des notifications
+            function updateNotifStatus() {
+                if (!('Notification' in window)) {
+                    notifStatus.textContent = 'Non supporté';
+                    notifStatus.style.background = '#f44336';
+                    notifStatusIcon.className = 'status-icon red';
+                    notifStatusIcon.innerHTML = '❌';
+                } else {
+                    notifStatus.textContent = Notification.permission;
+                    if (Notification.permission === 'granted') {
+                        notifStatus.style.background = '#27ae60';
+                        notifStatusIcon.className = 'status-icon green';
+                        notifStatusIcon.innerHTML = '✅';
+                    } else {
+                        notifStatus.style.background = '#f39c12';
+                        notifStatusIcon.className = 'status-icon';
+                        notifStatusIcon.innerHTML = '⚠️';
+                    }
+                }
+            }
+            
+            // Connexion
             loginBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const password = passwordInput.value.trim();
@@ -378,16 +484,19 @@
                     loginSection.style.display = 'none';
                     adminSection.style.display = 'block';
                     adminEmail.textContent = email;
-                    statusDiv.textContent = '✅ Connecté';
                     
                     addLog('✅ Connexion réussie', 'success');
+                    updateNotifStatus();
+                    
+                    // Compter et démarrer
                     await countEnAttente();
                     startListening();
                     
+                    // Service Worker
                     if ('serviceWorker' in navigator) {
                         try {
-                            await navigator.serviceWorker.register('service-worker.js');
-                            addLog('✅ Service Worker OK', 'success');
+                            const reg = await navigator.serviceWorker.register('service-worker.js');
+                            addLog('✅ Service Worker actif', 'success');
                         } catch (e) {
                             addLog(`Service Worker: ${e.message}`, 'warning');
                         }
@@ -402,18 +511,39 @@
                 }
             });
             
+            // Bouton test notification
             document.getElementById('testNotifBtn').addEventListener('click', async () => {
-                if (Notification.permission !== 'granted') {
-                    await Notification.requestPermission();
+                if (!('Notification' in window)) {
+                    addLog('❌ Notifications non supportées', 'error');
+                    return;
                 }
-                new Notification('🔔 Test', { body: 'Test notification', icon: 'icon-192.png' });
-                if ('vibrate' in navigator) navigator.vibrate(500);
-                addLog('🧪 Test envoyé', 'warning');
+                
+                if (Notification.permission !== 'granted') {
+                    addLog('⚠️ Permission requise d\'abord', 'warning');
+                    return;
+                }
+                
+                await sendNotification('🔔 Test', 'Ceci est une notification de test');
             });
             
+            // Bouton permission
+            document.getElementById('requestPermissionBtn').addEventListener('click', async () => {
+                if (!('Notification' in window)) {
+                    addLog('❌ Notifications non supportées', 'error');
+                    return;
+                }
+                
+                const permission = await Notification.requestPermission();
+                updateNotifStatus();
+                addLog(`📢 Permission: ${permission}`, permission === 'granted' ? 'success' : 'warning');
+            });
+            
+            // Bouton effacer badge
             document.getElementById('clearBadgeBtn').addEventListener('click', async () => {
                 await updateBadge(0);
-                if ('clearAppBadge' in navigator) await navigator.clearAppBadge();
+                if ('clearAppBadge' in navigator) {
+                    await navigator.clearAppBadge();
+                }
                 addLog('🧹 Badge effacé', 'warning');
             });
             
@@ -424,8 +554,10 @@
                     loginSection.style.display = 'none';
                     adminSection.style.display = 'block';
                     adminEmail.textContent = session.user.email;
-                    statusDiv.textContent = '✅ Session restaurée';
+                    
                     addLog('✅ Session existante', 'success');
+                    updateNotifStatus();
+                    
                     await countEnAttente();
                     startListening();
                 }
