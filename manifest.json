@@ -1,18 +1,18 @@
 {
-    "name": "Test Notification PWA",
-    "short_name": "Test Notif",
-    "start_url": "https://ivan-26work.github.io/Test-de-code/",
+    "name": "Virtual Market - Test Notifications",
+    "short_name": "VMarket Test",
+    "start_url": "test-notifications.html",
     "display": "standalone",
-    "background_color": "#f0f0f0",
-    "theme_color": "#2196f3",
+    "background_color": "#667eea",
+    "theme_color": "#764ba2",
     "icons": [
         {
-            "src": "icon-192.png",
+            "src": "https://via.placeholder.com/192",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "icon-512.png",
+            "src": "https://via.placeholder.com/512",
             "sizes": "512x512",
             "type": "image/png"
         }
