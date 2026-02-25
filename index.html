@@ -3,112 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Market - Notifications</title>
+    <title>Virtual Market - Notifications Admin</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        body {
+        * {
             margin: 0;
-            height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            justify-content: center;
+            padding: 20px;
         }
         
         .container {
             background: white;
+            border-radius: 30px;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
             max-width: 500px;
-            width: 90%;
-        }
-        
-        h1 {
-            color: #27ae60;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
             color: white;
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
         }
         
-        .info-card {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #27ae60;
-            text-align: left;
-        }
-        
-        .info-card h3 {
+        h1 {
+            text-align: center;
             color: #333;
             margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .login-section {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        
-        .info-card p {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-        
-        .badge-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 50px;
             margin-bottom: 20px;
-        }
-        
-        .badge-label {
-            font-weight: 600;
             color: #333;
         }
         
-        .badge-count {
-            background: #e74c3c;
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 5px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
             border: none;
             border-radius: 30px;
             font-size: 1rem;
@@ -117,65 +110,113 @@
             transition: all 0.2s;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
-        }
-        
-        .btn-primary:hover {
+        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.6);
         }
         
-        .btn-secondary {
-            background: #f0f0f0;
+        .admin-section {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            display: none;
+        }
+        
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .admin-email {
+            background: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
             color: #333;
         }
         
-        .btn-secondary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
         
-        .btn-danger {
-            background: #e74c3c;
+        .status-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-icon.green {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .status-icon.red {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary, .btn-danger {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
-        .btn-danger:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-        
-        .status-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            text-align: left;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .status-box .title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .btn-danger {
+            background: #f44336;
+            color: white;
         }
         
         .log-container {
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
             background: #1a1a1a;
             color: #00ff00;
             padding: 15px;
-            border-radius: 16px;
+            border-radius: 15px;
             font-family: monospace;
             font-size: 0.8rem;
-            text-align: left;
+            margin-top: 20px;
         }
         
         .log-entry {
@@ -184,304 +225,212 @@
             padding-bottom: 5px;
         }
         
-        .badge-system {
-            display: inline-block;
-            background: #27ae60;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 5px;
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
-    <!-- Supabase JS -->
+    <!-- CDN Supabase UNIQUE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            🏪
-        </div>
-        
+        <div class="logo">🏪</div>
         <h1>Virtual Market</h1>
-        <div class="subtitle">Système de notifications - Test</div>
+        <div class="subtitle">Notifications Admin</div>
         
-        <div class="info-card">
-            <h3>📡 Connexion Supabase</h3>
-            <p><strong>Table surveillée:</strong> commandes</p>
-            <p><strong>Événement:</strong> INSERT (nouvelle commande)</p>
-            <p><strong>Badge:</strong> Commandes en attente</p>
-        </div>
-        
-        <div class="badge-container">
-            <span class="badge-label">📊 Commandes en attente</span>
-            <span class="badge-count" id="badgeDisplay">0</span>
-        </div>
-        
-        <div class="button-group">
-            <button class="btn-primary" id="testNotifBtn">
-                🔔 Tester notification
-            </button>
-            <button class="btn-secondary" id="permissionBtn">
-                🔐 Permission
-            </button>
-        </div>
-        
-        <button class="btn-danger" id="clearBadgeBtn" style="width:100%; margin-bottom:20px;">
-            🧹 Effacer badge
-        </button>
-        
-        <div class="status-box">
-            <div class="title">
-                <span>📌 État</span>
-                <span id="badgeSupport" class="badge-system">Vérification...</span>
+        <!-- Login -->
+        <div class="login-section" id="loginSection">
+            <div class="login-title">🔐 Connexion administrateur</div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" value="virtualbymeg@gmail.com">
             </div>
-            <div id="status">Initialisation...</div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="passwordInput">
+            </div>
+            <button class="btn-login" id="loginBtn">Se connecter</button>
+            <div id="loginError" class="error-message"></div>
         </div>
         
-        <div class="log-container" id="logContainer">
-            <div class="log-entry">🚀 Système démarré</div>
+        <!-- Espace admin -->
+        <div class="admin-section" id="adminSection">
+            <div class="admin-header">
+                <span>👑 Espace Admin</span>
+                <span class="admin-email" id="adminEmail">-</span>
+            </div>
+            
+            <div class="stats-card">
+                <span>📊 Commandes en attente</span>
+                <span class="stats-value" id="badgeDisplay">0</span>
+            </div>
+            
+            <div id="status"></div>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry">🚀 Prêt</div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" id="testNotifBtn">🔔 Tester</button>
+                <button class="btn-danger" id="clearBadgeBtn">🧹 Effacer</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Configuration Supabase
-        const SUPABASE_URL = 'https://vpgzcakjnbsttmmzpvar.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3pjYWtqbmJzdHRtbXpwdmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM3NTUsImV4cCI6MjA4NzI1OTc1NX0.9s9VN5B9IxFuxxCrSCRb3f4kaUGRMUGR6fHpglQXioQ';
-        
-        // Initialisation Supabase
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // État
-        let badgeCount = 0;
-        let subscription = null;
-        
-        // Éléments DOM
-        const statusDiv = document.getElementById('status');
-        const badgeDisplay = document.getElementById('badgeDisplay');
-        const logContainer = document.getElementById('logContainer');
-        const badgeSupport = document.getElementById('badgeSupport');
-        
-        // Fonction de log
-        function addLog(message, type = 'info') {
-            const icons = {
-                info: '📋',
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                notification: '🔔'
-            };
+        (function() {
+            // CONFIGURATION UNIQUE
+            const SUPABASE_URL = 'https://vpgzcakjnbsttmmzpvar.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3pjYWtqbmJzdHRtbXpwdmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM3NTUsImV4cCI6MjA4NzI1OTc1NX0.9s9VN5B9IxFuxxCrSCRb3f4kaUGRMUGR6fHpglQXioQ';
             
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-            logEntry.innerHTML = `${icons[type] || '📋'} ${new Date().toLocaleTimeString()} - ${message}`;
-            logContainer.appendChild(logEntry);
-            logContainer.scrollTop = logContainer.scrollHeight;
-        }
-        
-        // Mise à jour du statut
-        function updateStatus(message, isError = false) {
-            statusDiv.textContent = message;
-            statusDiv.style.color = isError ? '#e74c3c' : '#27ae60';
-            addLog(message, isError ? 'error' : 'info');
-        }
-        
-        // Vérifier le support des badges système
-        function checkBadgeSupport() {
-            if ('setAppBadge' in navigator) {
-                badgeSupport.innerHTML = '✅ Badge supporté';
-                badgeSupport.style.background = '#27ae60';
-                addLog('✅ Badge système supporté', 'success');
-            } else {
-                badgeSupport.innerHTML = '❌ Badge non supporté';
-                badgeSupport.style.background = '#e74c3c';
-                addLog('⚠️ Badge système non supporté', 'warning');
+            // CRÉATION UNIQUE
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // Éléments DOM
+            const loginSection = document.getElementById('loginSection');
+            const adminSection = document.getElementById('adminSection');
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+            const adminEmail = document.getElementById('adminEmail');
+            const badgeDisplay = document.getElementById('badgeDisplay');
+            const logContainer = document.getElementById('logContainer');
+            const statusDiv = document.getElementById('status');
+            
+            let badgeCount = 0;
+            let subscription = null;
+            
+            function addLog(msg, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `${type === 'success' ? '✅' : type === 'error' ? '❌' : '📋'} ${new Date().toLocaleTimeString()} - ${msg}`;
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
             }
-        }
-        
-        // Mettre à jour le badge
-        async function updateBadge(count) {
-            badgeCount = count;
-            badgeDisplay.textContent = badgeCount;
             
-            if ('setAppBadge' in navigator) {
+            async function updateBadge(count) {
+                badgeCount = count;
+                badgeDisplay.textContent = badgeCount;
+                if ('setAppBadge' in navigator) {
+                    try {
+                        if (badgeCount > 0) await navigator.setAppBadge(badgeCount);
+                        else await navigator.clearAppBadge();
+                    } catch (e) {}
+                }
+            }
+            
+            async function countEnAttente() {
                 try {
-                    if (badgeCount > 0) {
-                        await navigator.setAppBadge(badgeCount);
-                        addLog(`🔄 Badge système: ${badgeCount}`, 'info');
-                    } else {
-                        await navigator.clearAppBadge();
-                        addLog('🔄 Badge système effacé', 'info');
-                    }
+                    const { count, error } = await supabase
+                        .from('commandes')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('statut_admin', 'en_attente');
+                    if (error) throw error;
+                    await updateBadge(count || 0);
+                    return count;
                 } catch (error) {
-                    console.error('Erreur badge:', error);
+                    addLog(`Erreur comptage: ${error.message}`, 'error');
+                    return 0;
                 }
             }
-        }
-        
-        // Envoyer une notification
-        async function sendNotification(commande) {
-            if (!('Notification' in window)) {
-                updateStatus('❌ Notifications non supportées', true);
-                return;
-            }
             
-            if (Notification.permission !== 'granted') {
-                updateStatus('❌ Permission non accordée', true);
-                return;
-            }
-            
-            try {
-                if ('vibrate' in navigator) {
-                    navigator.vibrate([500, 200, 500]);
-                }
-                
-                const notification = new Notification('🛒 Nouvelle commande !', {
-                    body: `${commande.user_nom} • ${commande.total} F • ${commande.user_commune || 'Non définie'}`,
-                    icon: 'icon-192.png',
-                    badge: 'icon-192.png',
-                    vibrate: [500, 200, 500],
-                    requireInteraction: true,
-                    tag: `commande-${commande.id}`,
-                    data: {
-                        commandeId: commande.id,
-                        url: window.location.href
-                    }
-                });
-                
-                notification.onclick = function() {
-                    window.focus();
-                    addLog(`👆 Clic sur notification - Commande ${commande.id}`, 'info');
-                };
-                
-                addLog(`📢 Notification envoyée pour commande ${commande.id}`, 'notification');
-                updateStatus(`✅ Notification envoyée`);
-                
-            } catch (error) {
-                console.error('Erreur notification:', error);
-                updateStatus(`❌ Erreur: ${error.message}`, true);
-            }
-        }
-        
-        // Compter les commandes en attente
-        async function countEnAttente() {
-            try {
-                const { count, error } = await supabase
-                    .from('commandes')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('statut_admin', 'en_attente');
-                
-                if (error) throw error;
-                
-                await updateBadge(count || 0);
-                addLog(`📊 Commandes en attente: ${count || 0}`, 'info');
-                
-            } catch (error) {
-                console.error('Erreur comptage:', error);
-                updateStatus(`❌ Erreur comptage: ${error.message}`, true);
-            }
-        }
-        
-        // Démarrer l'écoute
-        function startListening() {
-            addLog('🔄 Démarrage écoute des commandes...', 'info');
-            
-            subscription = supabase
-                .channel('commandes-notifications')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'INSERT',
-                        schema: 'public',
-                        table: 'commandes'
-                    },
-                    async (payload) => {
-                        const commande = payload.new;
-                        addLog(`🆕 NOUVELLE COMMANDE!`, 'success');
-                        addLog(`   Client: ${commande.user_nom} - ${commande.total} F`, 'info');
-                        
+            function startListening() {
+                if (subscription) subscription.unsubscribe();
+                subscription = supabase
+                    .channel('commandes-admin')
+                    .on('postgres_changes', { 
+                        event: 'INSERT', 
+                        schema: 'public', 
+                        table: 'commandes' 
+                    }, async (payload) => {
+                        const cmd = payload.new;
+                        addLog(`🆕 Nouvelle commande: ${cmd.user_nom} - ${cmd.total} F`, 'success');
                         await countEnAttente();
-                        await sendNotification(commande);
-                    }
-                )
-                .subscribe((status) => {
-                    addLog(`📡 Connexion: ${status}`, 'info');
-                    if (status === 'SUBSCRIBED') {
-                        updateStatus('✅ Connecté - En attente de commandes');
-                    }
-                });
-        }
-        
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', async () => {
-            addLog('🚀 Système de notifications démarré', 'success');
-            checkBadgeSupport();
-            await countEnAttente();
+                        
+                        if (Notification.permission === 'granted') {
+                            new Notification('🛒 Nouvelle commande', {
+                                body: `${cmd.user_nom} • ${cmd.total} F`,
+                                icon: 'icon-192.png',
+                                vibrate: [500, 200, 500]
+                            });
+                            if ('vibrate' in navigator) navigator.vibrate([500, 200, 500]);
+                        }
+                    })
+                    .subscribe();
+            }
             
-            // Service Worker
-            if ('serviceWorker' in navigator) {
+            loginBtn.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Connexion...';
+                loginError.textContent = '';
+                
                 try {
-                    const registration = await navigator.serviceWorker.register('service-worker.js');
-                    addLog('✅ Service Worker enregistré', 'success');
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    if (email !== 'virtualbymeg@gmail.com') throw new Error('Accès non autorisé');
+                    
+                    loginSection.style.display = 'none';
+                    adminSection.style.display = 'block';
+                    adminEmail.textContent = email;
+                    statusDiv.textContent = '✅ Connecté';
+                    
+                    addLog('✅ Connexion réussie', 'success');
+                    await countEnAttente();
+                    startListening();
+                    
+                    if ('serviceWorker' in navigator) {
+                        try {
+                            await navigator.serviceWorker.register('service-worker.js');
+                            addLog('✅ Service Worker OK', 'success');
+                        } catch (e) {
+                            addLog(`Service Worker: ${e.message}`, 'warning');
+                        }
+                    }
+                    
                 } catch (error) {
-                    addLog(`⚠️ Service Worker: ${error.message}`, 'warning');
+                    loginError.textContent = error.message;
+                    addLog(`❌ ${error.message}`, 'error');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Se connecter';
                 }
-            }
+            });
             
-            // Permission notifications
-            if (!('Notification' in window)) {
-                updateStatus('❌ Notifications non supportées', true);
-                return;
-            }
-            
-            if (Notification.permission === 'granted') {
-                updateStatus('✅ Permission accordée');
-                startListening();
-            } else if (Notification.permission !== 'denied') {
-                updateStatus('📢 Cliquez sur "Permission"');
-            }
-        });
-        
-        // Bouton test
-        document.getElementById('testNotifBtn').addEventListener('click', async () => {
-            if (Notification.permission !== 'granted') {
-                const permission = await Notification.requestPermission();
-                if (permission !== 'granted') {
-                    updateStatus('❌ Permission refusée', true);
-                    return;
+            document.getElementById('testNotifBtn').addEventListener('click', async () => {
+                if (Notification.permission !== 'granted') {
+                    await Notification.requestPermission();
                 }
-            }
+                new Notification('🔔 Test', { body: 'Test notification', icon: 'icon-192.png' });
+                if ('vibrate' in navigator) navigator.vibrate(500);
+                addLog('🧪 Test envoyé', 'warning');
+            });
             
-            const fakeCommande = {
-                id: 'test-' + Date.now(),
-                user_nom: 'Test Client',
-                total: Math.floor(Math.random() * 5000) + 1000,
-                user_commune: 'Cocody'
-            };
+            document.getElementById('clearBadgeBtn').addEventListener('click', async () => {
+                await updateBadge(0);
+                if ('clearAppBadge' in navigator) await navigator.clearAppBadge();
+                addLog('🧹 Badge effacé', 'warning');
+            });
             
-            addLog('🧪 Test: Notification de test', 'warning');
-            await sendNotification(fakeCommande);
-        });
-        
-        // Bouton permission
-        document.getElementById('permissionBtn').addEventListener('click', async () => {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                updateStatus('✅ Permission accordée');
-                startListening();
-            } else {
-                updateStatus('❌ Permission refusée', true);
-            }
-        });
-        
-        // Bouton effacer badge
-        document.getElementById('clearBadgeBtn').addEventListener('click', async () => {
-            await updateBadge(0);
-            if ('clearAppBadge' in navigator) {
-                await navigator.clearAppBadge();
-            }
-            addLog('🧹 Badge effacé', 'warning');
-        });
+            // Vérifier session existante
+            (async () => {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session && session.user.email === 'virtualbymeg@gmail.com') {
+                    loginSection.style.display = 'none';
+                    adminSection.style.display = 'block';
+                    adminEmail.textContent = session.user.email;
+                    statusDiv.textContent = '✅ Session restaurée';
+                    addLog('✅ Session existante', 'success');
+                    await countEnAttente();
+                    startListening();
+                }
+            })();
+        })();
     </script>
 </body>
 </html>
