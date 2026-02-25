@@ -3,398 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtua Market - Notifications</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Test Notifications - Virtual Market</title>
+    <link rel="manifest" href="manifest-test.json">
     <style>
-        body {
+        * {
             margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
         .container {
             background: white;
+            border-radius: 30px;
             padding: 40px;
-            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
+            animation: slideUp 0.5s ease;
         }
         
-        h1 {
-            color: #764ba2;
-            margin-bottom: 20px;
-            font-size: 28px;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
             color: white;
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
         
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .badge-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .badge-count {
+            background: #ff4444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
         button {
-            padding: 20px 40px;
-            font-size: 20px;
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 10px 0;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
-        button:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
-        button.secondary {
+        .btn-secondary {
             background: #f0f0f0;
-            color: #764ba2;
-            box-shadow: none;
+            color: #333;
         }
         
-        button.secondary:hover {
+        .btn-secondary:hover {
             background: #e0e0e0;
             transform: translateY(-2px);
         }
         
-        #status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            min-height: 20px;
-            background: #f8f9fa;
-            transition: all 0.3s;
-        }
-        
-        .badge-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .badge-count {
-            display: inline-block;
+        .btn-danger {
             background: #ff4444;
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 16px;
         }
         
-        .info-text {
-            font-size: 12px;
+        .btn-danger:hover {
+            background: #ff6666;
+            transform: translateY(-2px);
+        }
+        
+        .status-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .status-box .title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-box .content {
             color: #666;
-            margin-top: 10px;
+            word-break: break-word;
         }
         
-        .device-badge {
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 16px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .badge-system {
+            display: inline-block;
             background: #4CAF50;
             color: white;
-            padding: 4px 8px;
+            padding: 2px 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 0.7rem;
             margin-left: 5px;
         }
     </style>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            🏪
-        </div>
-        <h1>Virtua Market</h1>
-        
-        <button id="notifyBtn">
-            🔔 Envoyer un appel
-        </button>
-        
-        <button id="clearBadgeBtn" class="secondary">
-            🧹 Effacer toutes les notifications
-        </button>
-        
-        <div id="status">Prêt à envoyer des appels</div>
-        
-        <div class="badge-info">
-            <span><strong>📊 Appels manqués:</strong></span>
-            <span id="badgeDisplay" class="badge-count">0</span>
+            📦
         </div>
         
-        <div class="info-text">
-            <span id="badgeSupport"></span>
+        <h1>Virtual Market</h1>
+        <div class="subtitle">Système de notifications - Test autonome</div>
+        
+        <div class="info-card">
+            <h3>
+                <i class="fas fa-database"></i>
+                Connexion Supabase
+            </h3>
+            <p>
+                <strong>URL:</strong> https://vpgzcakjnbsttmmzpvar.supabase.co<br>
+                <strong>Table surveillée:</strong> commandes<br>
+                <strong>Événement:</strong> INSERT
+            </p>
+        </div>
+        
+        <div class="badge-container">
+            <span class="badge-label">📊 Commandes en attente</span>
+            <span class="badge-count" id="badgeDisplay">0</span>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-primary" id="testNotifBtn">
+                🔔 Tester notification
+            </button>
+            <button class="btn-secondary" id="permissionBtn">
+                🔐 Permission
+            </button>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-danger" id="clearBadgeBtn">
+                🧹 Effacer badge
+            </button>
+        </div>
+        
+        <div class="status-box">
+            <div class="title">
+                <i class="fas fa-info-circle"></i>
+                État
+                <span id="badgeSupport" class="badge-system">Vérification...</span>
+            </div>
+            <div class="content" id="status">
+                Initialisation...
+            </div>
+        </div>
+        
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">📋 Système de notifications démarré</div>
         </div>
     </div>
 
+    <!-- Service Worker -->
     <script>
+        // Configuration Supabase (depuis supabase.js)
+        const SUPABASE_URL = 'https://vpgzcakjnbsttmmzpvar.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3pjYWtqbmJzdHRtbXpwdmFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM3NTUsImV4cCI6MjA4NzI1OTc1NX0.9s9VN5B9IxFuxxCrSCRb3f4kaUGRMUGR6fHpglQXioQ';
+        
+        // Initialisation Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // État
+        let badgeCount = 0;
+        let subscription = null;
+        
+        // Éléments DOM
         const statusDiv = document.getElementById('status');
         const badgeDisplay = document.getElementById('badgeDisplay');
+        const logContainer = document.getElementById('logContainer');
         const badgeSupport = document.getElementById('badgeSupport');
         
+        // Fonction de log
+        function addLog(message, type = 'info') {
+            const icons = {
+                info: '📋',
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                notification: '🔔'
+            };
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `${icons[type] || '📋'} ${new Date().toLocaleTimeString()} - ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // Mise à jour du statut
         function updateStatus(message, isError = false) {
             statusDiv.textContent = message;
             statusDiv.style.color = isError ? '#ff4444' : '#00C851';
-            statusDiv.style.background = isError ? '#ffebee' : '#e8f5e8';
-            
-            setTimeout(() => {
-                statusDiv.textContent = 'Prêt à envoyer des appels';
-                statusDiv.style.color = '#666';
-                statusDiv.style.background = '#f8f9fa';
-            }, 4000);
+            addLog(message, isError ? 'error' : 'info');
         }
-
-        // Vérifier le support du badge système
+        
+        // Vérifier le support des badges système
         function checkBadgeSupport() {
             if ('setAppBadge' in navigator) {
-                badgeSupport.innerHTML = '✅ Badge système supporté <span class="device-badge">Android</span>';
+                badgeSupport.innerHTML = '✅ Badge supporté';
+                badgeSupport.style.background = '#4CAF50';
+                addLog('✅ Badge système supporté', 'success');
             } else {
-                badgeSupport.innerHTML = '⚠️ Badge système non supporté sur ce navigateur';
+                badgeSupport.innerHTML = '❌ Badge non supporté';
+                badgeSupport.style.background = '#ff4444';
+                addLog('⚠️ Badge système non supporté', 'warning');
             }
         }
-
-        // Mettre à jour le badge (affichage ET système)
-        async function updateBadgeDisplay() {
-            const count = parseInt(localStorage.getItem('notifCount') || '0');
-            badgeDisplay.textContent = count;
+        
+        // Mettre à jour le badge
+        async function updateBadge(count) {
+            badgeCount = count;
+            badgeDisplay.textContent = badgeCount;
             
-            // Mise à jour du badge sur l'icône Android
+            // Badge système
             if ('setAppBadge' in navigator) {
                 try {
-                    if (count > 0) {
-                        await navigator.setAppBadge(count);
-                        console.log('✅ Badge système mis à jour:', count);
+                    if (badgeCount > 0) {
+                        await navigator.setAppBadge(badgeCount);
+                        addLog(`🔄 Badge système mis à jour: ${badgeCount}`, 'info');
                     } else {
                         await navigator.clearAppBadge();
-                        console.log('✅ Badge système effacé');
+                        addLog(`🔄 Badge système effacé`, 'info');
                     }
                 } catch (error) {
-                    console.error('Erreur badge système:', error);
+                    console.error('Erreur badge:', error);
                 }
+            }
+        }
+        
+        // Envoyer une notification
+        async function sendNotification(commande) {
+            if (!('Notification' in window)) {
+                updateStatus('❌ Notifications non supportées', true);
+                return;
             }
             
-            // Mise à jour du badge dans l'application
-            badgeDisplay.textContent = count;
-        }
-
-        // Fonction pour créer une vibration longue et répétée
-        function startVibration() {
-            if ('vibrate' in navigator) {
-                // Pattern: vibrer 1 seconde, pause 0.5 seconde, répéter
-                navigator.vibrate([1000, 500, 1000, 500, 1000, 500, 1000]);
+            if (Notification.permission !== 'granted') {
+                updateStatus('❌ Permission non accordée', true);
+                return;
             }
-        }
-
-        // Arrêter la vibration
-        function stopVibration() {
-            if ('vibrate' in navigator) {
-                navigator.vibrate(0);
-            }
-        }
-
-        // Enregistrement du service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(reg => {
-                    console.log('Service Worker Virtua Market enregistré');
-                    updateStatus('✅ Service Worker actif');
-                })
-                .catch(err => {
-                    console.error('Erreur Service Worker:', err);
-                    updateStatus('❌ Erreur Service Worker', true);
-                });
-        }
-
-        // Fonction pour envoyer une notification (appel)
-        async function sendNotification() {
+            
             try {
-                updateStatus('📞 Appel en cours...');
+                // Vibrer
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([500, 200, 500]);
+                }
                 
-                if (!('Notification' in window)) {
-                    updateStatus('❌ Appels non supportés', true);
-                    return;
-                }
-
-                // Gestion de la permission
-                if (Notification.permission === 'denied') {
-                    updateStatus('❌ Appels bloqués - Débloquez dans les paramètres', true);
-                    return;
-                }
-
-                if (Notification.permission === 'default') {
-                    updateStatus('📞 Demande de permission pour les appels...');
-                    const permission = await Notification.requestPermission();
-                    if (permission !== 'granted') {
-                        updateStatus('❌ Permission refusée', true);
-                        return;
+                // Créer la notification
+                const notification = new Notification('🛒 Nouvelle commande !', {
+                    body: `${commande.user_nom} • ${commande.total} F • ${commande.user_commune || 'Non définie'}`,
+                    icon: 'https://via.placeholder.com/192',
+                    badge: 'https://via.placeholder.com/192',
+                    vibrate: [500, 200, 500],
+                    requireInteraction: true,
+                    tag: `commande-${commande.id}`,
+                    data: {
+                        commandeId: commande.id,
+                        url: window.location.href
                     }
-                }
-
-                // Incrémenter le compteur d'appels manqués
-                let count = parseInt(localStorage.getItem('notifCount') || '0');
-                count++;
-                localStorage.setItem('notifCount', count);
+                });
                 
-                // Mettre à jour le badge
-                await updateBadgeDisplay();
-
-                // Démarrer la vibration (comme un appel)
-                startVibration();
-                updateStatus('📞 Appel entrant... vibration activée');
-
-                // Envoyer la notification via Service Worker
-                if (navigator.serviceWorker.controller) {
-                    const registration = await navigator.serviceWorker.ready;
-                    
-                    // Tag unique pour la notification
-                    const notificationTag = 'appel-' + Date.now();
-                    
-                    await registration.showNotification('📞 Appel entrant - Virtua Market', {
-                        body: 'Appel de Virtua Market... Appuyez pour répondre',
-                        icon: 'icon-512.png',
-                        badge: 'icon-192.png',
-                        vibrate: [1000, 500, 1000, 500, 1000, 500, 1000], // Vibration longue comme un appel
-                        tag: notificationTag,
-                        renotify: true,
-                        requireInteraction: true, // Reste jusqu'à interaction
-                        silent: false,
-                        actions: [
-                            {
-                                action: 'answer',
-                                title: '📞 Répondre'
-                            },
-                            {
-                                action: 'ignore',
-                                title: '❌ Ignorer'
-                            }
-                        ],
-                        data: {
-                            timestamp: new Date().toISOString(),
-                            count: count,
-                            appName: 'Virtua Market',
-                            tag: notificationTag,
-                            type: 'call'
-                        }
-                    });
-
-                    // Afficher le message selon le nombre d'appels manqués
-                    if (count === 1) {
-                        updateStatus(`📞 1 appel en cours... Répondez dans la notification`);
-                    } else {
-                        updateStatus(`📞 Appel en cours... ${count} appels manqués au total`);
-                    }
-                    
-                } else {
-                    // Fallback
-                    new Notification('📞 Appel entrant - Virtua Market', {
-                        body: 'Appel de Virtua Market...',
-                        icon: 'icon-512.png',
-                        vibrate: [1000, 500, 1000, 500, 1000],
-                        requireInteraction: true
-                    });
-                    updateStatus('📞 Appel en cours (mode fallback)');
-                }
+                notification.onclick = function() {
+                    window.focus();
+                    addLog(`👆 Clic sur notification - Commande ${commande.id}`, 'info');
+                };
+                
+                addLog(`📢 Notification envoyée pour commande ${commande.id}`, 'notification');
+                updateStatus(`✅ Notification envoyée (commande ${commande.id})`);
                 
             } catch (error) {
-                console.error('Erreur complète:', error);
-                updateStatus('❌ Erreur: ' + error.message, true);
-                stopVibration();
+                console.error('Erreur notification:', error);
+                updateStatus(`❌ Erreur: ${error.message}`, true);
             }
         }
-
-        // Effacer toutes les notifications et arrêter la vibration
-        async function clearAllNotifications() {
-            // Arrêter la vibration
-            stopVibration();
+        
+        // Compter les commandes en attente
+        async function countEnAttente() {
+            try {
+                const { count, error } = await supabase
+                    .from('commandes')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('statut_admin', 'en_attente');
+                
+                if (error) throw error;
+                
+                await updateBadge(count || 0);
+                addLog(`📊 Commandes en attente: ${count || 0}`, 'info');
+                
+            } catch (error) {
+                console.error('Erreur comptage:', error);
+                updateStatus(`❌ Erreur comptage: ${error.message}`, true);
+            }
+        }
+        
+        // Démarrer l'écoute des nouvelles commandes
+        function startListening() {
+            addLog('🔄 Démarrage de l\'écoute des commandes...', 'info');
             
-            // Réinitialiser le compteur
-            localStorage.setItem('notifCount', '0');
+            subscription = supabase
+                .channel('commandes-test')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'commandes'
+                    },
+                    async (payload) => {
+                        const commande = payload.new;
+                        addLog(`🆕 NOUVELLE COMMANDE DÉTECTÉE!`, 'success');
+                        addLog(`   ID: ${commande.id}`, 'info');
+                        addLog(`   Client: ${commande.user_nom}`, 'info');
+                        addLog(`   Total: ${commande.total} F`, 'info');
+                        
+                        // Mettre à jour le compteur
+                        await countEnAttente();
+                        
+                        // Envoyer notification
+                        await sendNotification(commande);
+                    }
+                )
+                .subscribe((status) => {
+                    addLog(`📡 Statut connexion: ${status}`, 'info');
+                    if (status === 'SUBSCRIBED') {
+                        updateStatus('✅ Connecté - En attente de commandes...');
+                    }
+                });
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            addLog('🚀 Système de notifications démarré', 'success');
             
-            // Effacer le badge système
+            // Vérifier le support
+            checkBadgeSupport();
+            
+            // Compter les commandes existantes
+            await countEnAttente();
+            
+            // Vérifier les permissions
+            if (!('Notification' in window)) {
+                updateStatus('❌ Notifications non supportées', true);
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                updateStatus('✅ Permission déjà accordée');
+                startListening();
+            } else if (Notification.permission !== 'denied') {
+                updateStatus('📢 En attente de permission...');
+            }
+            
+            // Enregistrer le Service Worker (optionnel pour les tests)
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw-test.js');
+                    addLog('✅ Service Worker enregistré', 'success');
+                } catch (error) {
+                    addLog(`⚠️ Service Worker: ${error.message}`, 'warning');
+                }
+            }
+        });
+        
+        // Bouton de test
+        document.getElementById('testNotifBtn').addEventListener('click', async () => {
+            if (Notification.permission !== 'granted') {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    updateStatus('❌ Permission refusée', true);
+                    return;
+                }
+            }
+            
+            // Simuler une nouvelle commande
+            const fakeCommande = {
+                id: 'test-' + Date.now(),
+                user_nom: 'Test Client',
+                total: Math.floor(Math.random() * 5000) + 1000,
+                user_commune: 'Cocody'
+            };
+            
+            addLog('🧪 Test: Envoi d\'une notification de test', 'warning');
+            await sendNotification(fakeCommande);
+        });
+        
+        // Bouton permission
+        document.getElementById('permissionBtn').addEventListener('click', async () => {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                updateStatus('✅ Permission accordée');
+                startListening();
+            } else {
+                updateStatus('❌ Permission refusée', true);
+            }
+        });
+        
+        // Bouton effacer badge
+        document.getElementById('clearBadgeBtn').addEventListener('click', async () => {
+            await updateBadge(0);
+            
             if ('clearAppBadge' in navigator) {
                 await navigator.clearAppBadge();
             }
             
-            // Mettre à jour l'affichage
-            await updateBadgeDisplay();
-            
-            // Fermer toutes les notifications affichées
-            if (navigator.serviceWorker.controller) {
-                const registration = await navigator.serviceWorker.ready;
-                const notifications = await registration.getNotifications();
-                notifications.forEach(notification => notification.close());
-            }
-            
-            updateStatus('✅ Appels terminés');
-        }
-
-        // Écouter les messages du Service Worker
-        if (navigator.serviceWorker) {
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.type === 'ANSWER_CALL') {
-                    // Répondre à l'appel
-                    stopVibration();
-                    updateStatus('📞 Appel en cours...');
-                    setTimeout(() => {
-                        updateStatus('✅ Appel terminé');
-                    }, 3000);
-                } else if (event.data.type === 'IGNORE_CALL') {
-                    // Ignorer l'appel
-                    stopVibration();
-                    updateStatus('❌ Appel ignoré');
-                } else if (event.data.type === 'CLEAR_BADGE') {
-                    clearAllNotifications();
-                }
-            });
-        }
-
-        // Initialisation
-        document.getElementById('notifyBtn').addEventListener('click', sendNotification);
-        document.getElementById('clearBadgeBtn').addEventListener('click', clearAllNotifications);
-        
-        // Mettre à jour l'affichage du badge au chargement
-        updateBadgeDisplay();
-        checkBadgeSupport();
-
-        // Vérifier le mode PWA
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            console.log('🏪 Virtua Market - Mode PWA actif sur l\'écran d\'accueil');
-            updateStatus('🏪 Virtua Market installé');
-        }
-
-        // Vérifier périodiquement le badge (pour Android)
-        setInterval(() => {
-            const count = parseInt(localStorage.getItem('notifCount') || '0');
-            if ('setAppBadge' in navigator && count > 0) {
-                navigator.setAppBadge(count).catch(() => {});
-            }
-        }, 5000);
-
+            addLog('🧹 Badge effacé manuellement', 'warning');
+        });
     </script>
 </body>
 </html>
